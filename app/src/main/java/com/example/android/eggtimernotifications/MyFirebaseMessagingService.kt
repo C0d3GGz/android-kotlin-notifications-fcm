@@ -31,9 +31,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
     // [START receive_message]
-    override fun onMessageReceived(remoteMessage: RemoteMessage?) {
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: ${remoteMessage?.from}")
+        Log.d(TAG, "From: ${remoteMessage.from}")
 
         // TODO Step 3.5 check messages for data
         // Check if message contains a data payload.
@@ -47,8 +47,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     //TODO Step 3.2 log registration token
     // [START on_new_token]
-
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+    }
     // [END on_new_token]
+
 
     /**
      * Persist token to third-party (your app) servers.
@@ -65,7 +68,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * @param messageBody FCM message body received.
      */
     private fun sendNotification(messageBody: String) {
-        val notificationManager = ContextCompat.getSystemService(applicationContext, NotificationManager::class.java) as NotificationManager
+        val notificationManager = ContextCompat.getSystemService(
+            applicationContext,
+            NotificationManager::class.java
+        ) as NotificationManager
         notificationManager.sendNotification(messageBody, applicationContext)
     }
 

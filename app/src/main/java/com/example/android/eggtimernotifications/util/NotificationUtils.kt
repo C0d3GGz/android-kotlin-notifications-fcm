@@ -18,6 +18,7 @@ package com.example.android.eggtimernotifications.util
 
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_ONE_SHOT
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
@@ -25,6 +26,7 @@ import com.example.android.eggtimernotifications.MainActivity
 import com.example.android.eggtimernotifications.R
 import com.example.android.eggtimernotifications.receiver.SnoozeReceiver
 import android.graphics.BitmapFactory
+import android.os.Build
 
 // Notification ID.
 private val NOTIFICATION_ID = 0
@@ -49,7 +51,9 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
         applicationContext,
         NOTIFICATION_ID,
         contentIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT
+        PendingIntent.FLAG_UPDATE_CURRENT or
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                    PendingIntent.FLAG_IMMUTABLE else 0
     )
 
 // TODO: Step 2.0 add style
@@ -65,7 +69,11 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
     // TODO: Step 2.2 add snooze action
     val snoozeIntent = Intent(applicationContext, SnoozeReceiver::class.java)
     val snoozePendingIntent: PendingIntent =
-        PendingIntent.getBroadcast(applicationContext, REQUEST_CODE, snoozeIntent, FLAGS)
+        PendingIntent.getBroadcast(
+            applicationContext, REQUEST_CODE, snoozeIntent, FLAG_ONE_SHOT or
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                        PendingIntent.FLAG_IMMUTABLE else 0
+        )
 
     // TODO: Step 1.2 get an instance of NotificationCompat.Builder
     // Build the notification
@@ -85,7 +93,7 @@ fun NotificationManager.sendNotification(messageBody: String, applicationContext
         .setLargeIcon(eggImage)
         // TODO: Step 2.3 add snooze action
         .addAction(
-           R.drawable.egg_icon,
+            R.drawable.egg_icon,
             applicationContext.getString(R.string.snooze),
             snoozePendingIntent
         )
